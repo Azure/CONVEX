@@ -45,7 +45,7 @@ $SecretKey1 = ConvertTo-SecureString -String $Key1.Value -AsPlainText -Force
 # Add the flag to the Storage Account
 $ctx = New-AzStorageContext -StorageAccountName $SAName -StorageAccountKey $Key1.Value
 New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
-Set-AzStorageBlobContent -File "C:\Users\t-edga\Documents\test.txt" -Container $BlobName -Blob $FileName -Context $ctx
+Set-AzStorageBlobContent -File ".\flag.txt" -Container $BlobName -Blob $FileName -Context $ctx
 
 #Switch Subscriptions
 Get-AzSubscription –SubscriptionId $SubTwo.Id -TenantId $SubTwo.TenantId | Set-AzContext
