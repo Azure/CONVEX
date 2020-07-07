@@ -11,8 +11,8 @@ $upn
 # Get the group and kv that the users will be added to 
 $groups = Get-AzAdGroup
 $search = "*" + $guid + "*"
-$toAdd = $groups | where DisplayName -Clike $search
-$UserKV = Get-AzResource | where Name -CLike "*userkv*"
+$toAdd = $groups | Where-Object DisplayName -Clike $search
+$UserKV = Get-AzResource | Where-Object Name -CLike "*userkv*"
 
 # Create the users
 for ($cur = 1; $cur -le $n; $cur++) {
