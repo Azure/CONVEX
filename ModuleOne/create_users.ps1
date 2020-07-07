@@ -3,6 +3,7 @@ param ($guid)
 Add-Type -AssemblyName System.Web
 
 $displayname
+$domainname = "@suzyicode4food.onmicrosoft.com"
 $upn
 
 # Ask user how many users to create
@@ -19,7 +20,7 @@ for ($cur = 1; $cur -le $n; $cur++) {
     
     # Create all the things
     $displayname = "User" + $cur
-    $upn = $displayname + "@suzyicode4food.onmicrosoft.com"
+    $upn = $displayname + $domainname
     $ptpw = [System.Web.Security.Membership]::GeneratePassword(12,2)
     $sspw = ConvertTo-SecureString -String $ptpw -AsPlainText -Force
 
