@@ -1,26 +1,27 @@
 # This PowerShell Script will create Module 3
 
+# Import Functions
+$wd = Get-Location
+$modules = $wd.ToString().Substring(0,30) + "\Utils\functions"
+Import-Module -Name $modules 
+
 # Create some names
 # Substring some guids first
-$guid1 = New-Guid 
-$guid1 = $guid1 -replace '-',''
-$guid1ss = $guid1.ToString().Substring(0,15)
-$guid2 = New-Guid
-$guid2 = $guid2 -replace '-',''
-$guid2ss = $guid2.ToString().Substring(0,15)
+$guid1 = Get-GuidSS
+$guid2 = Get-GuidSS
 
 # Starting RG resource names
-$RG1Name = "m3rg1" + $guid1ss
-$appName = "m3aadapp" + $guid1ss
-$UserVaultName = "m3userkv" + $guid1ss
-$SA1Name = "m3sa" + $guid1ss
+$RG1Name = "m3rg1" + $guid1
+$appName = "m3aadapp" + $guid1
+$UserVaultName = "m3userkv" + $guid1
+$SA1Name = "m3sa" + $guid1
 $Blob1Name = "m3function"
-$functionApp = "m3fx" + $guid1ss
+$functionApp = "m3fx" + $guid1
 $function = "m3function"
 
 # Ending RG resource names
-$RG2Name = "m3rg2" + $guid2ss
-$SA2Name = "m3sa" + $guid2ss
+$RG2Name = "m3rg2" + $guid2
+$SA2Name = "m3sa" + $guid2
 $Blob2Name = "m3resources"
 
 $Location = "westus"
@@ -31,7 +32,7 @@ Connect-AzureAD
 Az login
 
 # Create security group
-$groupname = "m3_" + $guid1ss
+$groupname = "m3_" + $guid1
 New-AzADGroup -DisplayName $groupname -MailNickname "m3_group_nick"
 
 # Create Azure App
@@ -92,13 +93,13 @@ $Key1 = (Get-AzStorageAccountKey -ResourceGroupName $RG2Name -Name $SA2Name) | W
 # Add the flag to the SA
 $ctx = New-AzStorageContext -StorageAccountName $SA2Name -StorageAccountKey $Key1.Value
 New-AzStorageContainer -Name $Blob2Name -Context $ctx -Permission Blob
-Set-AzStorageBlobContent -File .\flag.txt -Container $Blob2Name -Blob flag -Context $ctx
+Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $Blob2Name -Blob flag -Context $ctx
 
 # ------In Sub One------ #
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Create Users
-.\create_users.ps1 -guid $guid1ss
+..\Utils\create_users.ps1 $guid1 "@suzyicode4food.onmicrosoft.com" "m3"
 
 # Deploy function to function app
 func azure functionapp publish $functionApp --force

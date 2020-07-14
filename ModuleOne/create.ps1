@@ -1,17 +1,18 @@
 ﻿# This PowerShell Script will create Module 1
 
+# Import Functions
+$wd = Get-Location
+$modules = $wd.ToString().Substring(0,30) + "\Utils\functions"
+Import-Module -Name $modules 
+
 # Name some names
-$guid1 = New-Guid 
-$guid1 = $guid1 -replace '-',''
-$guid1ss = $guid1.ToString().Substring(0,15)
-$RG1Name = "m1rg1" + $guid1ss
-$guid2 = New-Guid
-$guid2 = $guid2 -replace '-',''
-$guid2ss = $guid2.ToString().Substring(0,15)
-$RG2Name = "m1rg2" + $guid2ss
-$VaultName = "m1kv" + $guid2ss
-$UserVaultName = "m1userkv" + $guid2ss
-$SAName = "m1sa" + $guid1ss
+$guid1 = Get-GuidSS 
+$RG1Name = "m1rg1" + $guid1
+$guid2 = Get-GuidSS
+$RG2Name = "m1rg2" + $guid2
+$VaultName = "m1kv" + $guid2
+$UserVaultName = "m1userkv" + $guid2
+$SAName = "m1sa" + $guid1
 $Location = "westus"
 $SKU = "Standard_LRS"
 $KeyName = "SAKey1"
@@ -19,7 +20,7 @@ $BlobName = "m1blob"
 $FileName = "m1Flag"
 
 # Create a group 
-$groupname = "m1_" + $guid1ss
+$groupname = "m1_" + $guid1
 $group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
 
 # Get the right subscriptions
@@ -45,7 +46,7 @@ $SecretKey1 = ConvertTo-SecureString -String $Key1.Value -AsPlainText -Force
 # Add the flag to the Storage Account
 $ctx = New-AzStorageContext -StorageAccountName $SAName -StorageAccountKey $Key1.Value
 New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
-Set-AzStorageBlobContent -File ".\flag.txt" -Container $BlobName -Blob $FileName -Context $ctx
+Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob $FileName -Context $ctx
 
 #Switch Subscriptions
 Get-AzSubscription –SubscriptionId $SubTwo.Id -TenantId $SubTwo.TenantId | Set-AzContext
@@ -64,4 +65,4 @@ New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceNam
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $KeyName -SecretValue $SecretKey1
 
 # Create the Users
-.\create_users.ps1 -guid $guid1ss
+..\Utils\create_users.ps1 $guid1 "@suzyicode4food.onmicrosoft.com" "m1"

@@ -1,23 +1,24 @@
 # This PowerShell Script will create Module 2
 
+# Import Functions
+$wd = Get-Location
+$modules = $wd.ToString().Substring(0,30) + "\Utils\functions"
+Import-Module -Name $modules 
+
 # Create some names
 # Substring some guids first
-$guid1 = New-Guid 
-$guid1 = $guid1 -replace '-',''
-$guid1ss = $guid1.ToString().Substring(0,15)
-$guid2 = New-Guid
-$guid2 = $guid2 -replace '-',''
-$guid2ss = $guid2.ToString().Substring(0,15)
+$guid1 = Get-GuidSS
+$guid2 = Get-GuidSS
 
 # Starting RG resource names
-$RG1Name = "m2rg1" + $guid1ss
-$UserVaultName = "m2userkv" + $guid1ss
-$webServiceName = "m2ws" + $guid1ss
+$RG1Name = "m2rg1" + $guid1
+$UserVaultName = "m2userkv" + $guid1
+$webServiceName = "m2ws" + $guid1
 
 # Ending RG resource names
-$RG2Name = "m2rg2" + $guid2ss
-$VaultName = "m2kv" + $guid2ss
-$SA2Name = "m2sa" + $guid2ss
+$RG2Name = "m2rg2" + $guid2
+$VaultName = "m2kv" + $guid2
+$SA2Name = "m2sa" + $guid2
 $BlobName = "m2resources"
 
 $Location = "westus"
@@ -27,7 +28,7 @@ $SKU = "Standard_LRS"
 Connect-AzureAD
 
 # Create security group
-$groupname = "m2_" + $guid1ss
+$groupname = "m2_" + $guid1
 $group = New-AzADGroup -DisplayName $groupname -MailNickname "m2_group_nick"
 
 # Get the right subscriptions
@@ -75,7 +76,7 @@ $sp2 = New-AzADServicePrincipal -DisplayName $sp2Name -Scope $sp2Scope
 # Add the flag to the SA
 $ctx = New-AzStorageContext -StorageAccountName $SA2Name -StorageAccountKey $Key1.Value
 New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
-Set-AzStorageBlobContent -File .\flag.txt -Container $BlobName -Blob flag -Context $ctx
+Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob flag -Context $ctx
 
 # Add in the appKey to the prived app
 Set-AzKeyVaultSecret -VaultName $theVault.VaultName -Name "appKey" -SecretValue $sp2.Secret
@@ -101,4 +102,4 @@ $settings['application_key'] = $secret.ToString()
 Set-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -AppSettings $settings
 
 # Create Users
-.\create_users.ps1 -guid $guid1ss
+..\Utils\create_users.ps1 $guid1 "@suzyicode4food.onmicrosoft.com" "m2"
