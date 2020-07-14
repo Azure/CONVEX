@@ -12,6 +12,7 @@ $SubOne = $allSubs | Where-Object Name -CLike $input1
 $SubTwo = $allSubs | Where-Object Name -CLike $input2
 
 # Delete Service Principles
+Connect-AzureAD
 $sps = Get-AzureADApplication
 $toDel = $sps | Where-Object DisplayName -Clike "m3*"
 foreach ($app in $toDel) {
@@ -19,7 +20,7 @@ foreach ($app in $toDel) {
 }
 
 # Delete created users and group
-.\delete_users.ps1
+..\Utils\delete_users.ps1 "m3"
 
 # ------Sub One------ #
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 

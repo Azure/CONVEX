@@ -12,7 +12,7 @@ $SubOne = $allSubs | Where-Object Name -CLike $input1
 $SubTwo = $allSubs | Where-Object Name -CLike $input2
 
 # Delete created users and group
-.\delete_users.ps1
+..\Utils\delete_users.ps1 "m1"
 
 # ------Sub One------ #
 Get-AzSubscription –SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
