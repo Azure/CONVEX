@@ -7,18 +7,24 @@ $modules = $wd.ToString().Substring(0,$len-10) + "\Utils\functions"
 Import-Module -Name $modules 
 
 # Name some names
+# Get Guids
 $guid1 = Get-GuidSS 
-$RG1Name = "m1rg1" + $guid1
 $guid2 = Get-GuidSS
+
+# RG One
+$RG1Name = "m1rg1" + $guid1
+$SAName = "m1sa" + $guid1
+$KeyName = "SAKey1"
+$BlobName = "m1blob"
+$FileName = "m1Flag.txt"
+
+# RG Two
 $RG2Name = "m1rg2" + $guid2
 $VaultName = "m1kv" + $guid2
 $UserVaultName = "m1userkv" + $guid2
-$SAName = "m1sa" + $guid1
+
 $Location = "westus"
 $SKU = "Standard_LRS"
-$KeyName = "SAKey1"
-$BlobName = "m1blob"
-$FileName = "m1Flag"
 
 # Create a group 
 $groupname = "m1_" + $guid1
@@ -26,12 +32,12 @@ $group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
 
 # Get the right subscriptions
 $allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the first subscription.'
-$prompt2 = Read-Host -Prompt 'Input the name of the second subscription.'
+$prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
+$prompt2 = Read-Host -Prompt 'Input the name of the second subscription'
 $input1 = "*" + $prompt1 + "*"
 $input2 = "*" + $prompt2 + "*"
-$SubOne = $allSubs | Where-Object Name -CLike $input1
-$SubTwo = $allSubs | Where-Object Name -CLike $input2
+$SubTwo = $allSubs | Where-Object Name -CLike $input1
+$SubOne = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription –SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
@@ -48,6 +54,8 @@ $SecretKey1 = ConvertTo-SecureString -String $Key1.Value -AsPlainText -Force
 $ctx = New-AzStorageContext -StorageAccountName $SAName -StorageAccountKey $Key1.Value
 New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
 Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob $FileName -Context $ctx
+$scope = '/subscriptions/' + $SubOne.Id + '/resourceGroups/' + $RG1Name + '/providers/Microsoft.Storage/storageAccounts/' + $SAName
+New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -Scope $scope
 
 #Switch Subscriptions
 Get-AzSubscription –SubscriptionId $SubTwo.Id -TenantId $SubTwo.TenantId | Set-AzContext
