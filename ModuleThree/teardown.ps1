@@ -38,7 +38,9 @@ $allRGs2 = Get-AzResourceGroup
 $RG2 = $allRGs2 | Where-Object ResourceGroupName -CLike "m3*"
 Remove-AzResourceGroup -Name $RG2.ResourceGroupName -Force
 
-# Remove created directory
+# Remove created directory and files
 $dir = Get-ChildItem . -Directory
 if ($dir) {Remove-Item .\$dir -Recurse}
+Remove-Item "host.json"
+Remove-Item "local.settings.json"
     
