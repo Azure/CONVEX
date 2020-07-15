@@ -101,7 +101,6 @@ Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $Blob2Name -Blob f
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Create Users
-if ($prompt3) {$prompt3 = '@' + $prompt3} else {$prompt3 = '@microsoft.onmicrosoft.com'}
 ..\Utils\create_users.ps1 $guid1 $prompt3 "m3"
 
 # Deploy function to function app

@@ -104,5 +104,4 @@ $settings['application_key'] = $secret.ToString()
 Set-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -AppSettings $settings
 
 # Create Users
-if ($prompt3) {$prompt3 = '@' + $prompt3} else {$prompt3 = '@microsoft.onmicrosoft.com'}
 ..\Utils\create_users.ps1 $guid1 $prompt3 "m2"

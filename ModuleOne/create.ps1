@@ -75,5 +75,4 @@ New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceNam
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $KeyName -SecretValue $SecretKey1
 
 # Create the Users
-if ($prompt3) {$prompt3 = '@' + $prompt3} else {$prompt3 = '@microsoft.onmicrosoft.com'}
 ..\Utils\create_users.ps1 $guid1 $prompt3 "m1"
