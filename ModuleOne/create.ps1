@@ -20,10 +20,6 @@ $KeyName = "SAKey1"
 $BlobName = "m1blob"
 $FileName = "m1Flag"
 
-# Create a group 
-$groupname = "m1_" + $guid1
-$group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
-
 # Get the right subscriptions
 $allSubs = Get-AzSubscription
 $prompt1 = Read-Host -Prompt 'Input the name of the first subscription.'
@@ -34,6 +30,10 @@ $SubOne = $allSubs | Where-Object Name -CLike $input1
 $SubTwo = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription –SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
+
+# Create a group 
+$groupname = "m1_" + $guid1
+$group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
 
 # ------In Sub One------ #
 # Create Resoure Group
