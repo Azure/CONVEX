@@ -3,7 +3,7 @@
 # Import Functions
 $wd = Get-Location
 $len = $wd.ToString().Length
-$modules = $wd.ToString().Substring(0,$len-10) + "\Utils\functions"
+$modules = $wd.ToString().Substring(0,$len-12) + "\Utils\functions"
 Import-Module -Name $modules 
 
 # Create some names
