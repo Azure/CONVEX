@@ -42,8 +42,9 @@ $appPswd = New-AzureAdApplicationPasswordCredential -ObjectId $app.ObjectId
 
 # Get the right subscriptions
 $allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the start subscription.'
-$prompt2 = Read-Host -Prompt 'Input the name of the end subscription.'
+$prompt1 = Read-Host -Prompt 'Input the name of the start subscription'
+$prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
+$prompt3 = Read-Host -Prompt 'Input the user domain name'
 $input1 = "*" + $prompt1 + "*"
 $input2 = "*" + $prompt2 + "*"
 $SubOne = $allSubs | Where-Object Name -CLike $input1
@@ -100,7 +101,8 @@ Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $Blob2Name -Blob f
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Create Users
-..\Utils\create_users.ps1 $guid1 "@suzyicode4food.onmicrosoft.com" "m3"
+if ($prompt3) {$prompt3 = '@' + $prompt3} else {$prompt3 = '@microsoft.onmicrosoft.com'}
+..\Utils\create_users.ps1 $guid1 $prompt3 "m3"
 
 # Deploy function to function app
 func azure functionapp publish $functionApp --force

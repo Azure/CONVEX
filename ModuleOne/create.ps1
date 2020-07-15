@@ -34,6 +34,7 @@ $group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
 $allSubs = Get-AzSubscription
 $prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
 $prompt2 = Read-Host -Prompt 'Input the name of the second subscription'
+$prompt3 = Read-Host -Prompt 'Input the user domain name'
 $input1 = "*" + $prompt1 + "*"
 $input2 = "*" + $prompt2 + "*"
 $SubTwo = $allSubs | Where-Object Name -CLike $input1
@@ -74,4 +75,5 @@ New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceNam
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $KeyName -SecretValue $SecretKey1
 
 # Create the Users
-..\Utils\create_users.ps1 $guid1 "@suzyicode4food.onmicrosoft.com" "m1"
+if ($prompt3) {$prompt3 = '@' + $prompt3} else {$prompt3 = '@microsoft.onmicrosoft.com'}
+..\Utils\create_users.ps1 $guid1 $prompt3 "m1"
