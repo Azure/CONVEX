@@ -68,11 +68,11 @@ func new -n $function -t "Timer trigger" -l PowerShell
 # Modify function code
 Copy-Item .\run.ps1 .\$function\
 Set-Location .\$function\
-$str = '$TenantId = ' + $SubTwo.TenantId
+$str = '$TenantId = "' + $SubTwo.TenantId + '"'
 (Get-Content .\run.ps1).replace('$TenantId = ', $str) | Set-Content .\run.ps1
-$str = '$AppObjectId = ' + $app.ObjectId
+$str = '$AppObjectId = "' + $app.ObjectId + '"'
 (Get-Content .\run.ps1).replace('$AppObjectId = ', $str) | Set-Content .\run.ps1
-$str = '$Password = ' + $appPswd.Value
+$str = '$Password = "' + $appPswd.Value + '"'
 (Get-Content .\run.ps1).replace('$Password = ', $str) | Set-Content .\run.ps1
 Set-Location ..
 
