@@ -34,8 +34,9 @@ $group = New-AzADGroup -DisplayName $groupname -MailNickname "m2_group_nick"
 
 # Get the right subscriptions
 $allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the first subscription.'
-$prompt2 = Read-Host -Prompt 'Input the name of the second subscription.'
+$prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
+$prompt2 = Read-Host -Prompt 'Input the name of the second subscription'
+$prompt3 = Read-Host -Prompt 'Input the user domain name'
 $input1 = "*" + $prompt1 + "*"
 $input2 = "*" + $prompt2 + "*"
 $SubOne = $allSubs | Where-Object Name -CLike $input1
@@ -103,4 +104,4 @@ $settings['application_key'] = $secret.ToString()
 Set-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -AppSettings $settings
 
 # Create Users
-..\Utils\create_users.ps1 $guid1 "@suzyicode4food.onmicrosoft.com" "m2"
+..\Utils\create_users.ps1 $guid1 $prompt3 "m2"
