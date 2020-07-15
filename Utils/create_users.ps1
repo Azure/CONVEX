@@ -20,7 +20,7 @@ for ($cur = 1; $cur -le $n; $cur++) {
     
     # Create all the things
     $displayname = "User" + $m1 + $cur
-    $upn = $displayname + $domainname
+    $upn = $displayname + "@" + $domainname
     $ptpw = [System.Web.Security.Membership]::GeneratePassword(12,2)
     $sspw = ConvertTo-SecureString -String $ptpw -AsPlainText -Force
 
