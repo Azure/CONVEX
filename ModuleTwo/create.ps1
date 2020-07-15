@@ -28,10 +28,6 @@ $SKU = "Standard_LRS"
 # Connect to AzureAd
 Connect-AzureAD
 
-# Create security group
-$groupname = "m2_" + $guid1
-$group = New-AzADGroup -DisplayName $groupname -MailNickname "m2_group_nick"
-
 # Get the right subscriptions
 $allSubs = Get-AzSubscription
 $prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
@@ -43,6 +39,10 @@ $SubOne = $allSubs | Where-Object Name -CLike $input1
 $SubTwo = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
+
+# Create security group
+$groupname = "m2_" + $guid1
+$group = New-AzADGroup -DisplayName $groupname -MailNickname "m2_group_nick"
 
 # ------In Sub One------ #
 # Create Resoure Group

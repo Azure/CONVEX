@@ -26,10 +26,6 @@ $UserVaultName = "m1userkv" + $guid2
 $Location = "westus"
 $SKU = "Standard_LRS"
 
-# Create a group 
-$groupname = "m1_" + $guid1
-$group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
-
 # Get the right subscriptions
 $allSubs = Get-AzSubscription
 $prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
@@ -41,6 +37,10 @@ $SubTwo = $allSubs | Where-Object Name -CLike $input1
 $SubOne = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription –SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
+
+# Create a group 
+$groupname = "m1_" + $guid1
+$group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
 
 # ------In Sub One------ #
 # Create Resoure Group
