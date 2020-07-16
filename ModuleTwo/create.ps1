@@ -1,10 +1,8 @@
 # This PowerShell Script will create Module 2
 
-# Import Functions
-$wd = Get-Location
-$len = $wd.ToString().Length
-$modules = $wd.ToString().Substring(0,$len-10) + "\Utils\functions"
-Import-Module -Name $modules 
+param($SubOne, $SubTwo, $userNum, $domainname)
+
+Write-Host "`n          =====Creating Module Two=====`n"
 
 # Create some names
 # Substring some guids first
@@ -24,19 +22,6 @@ $BlobName = "m2resources"
 
 $Location = "westus"
 $SKU = "Standard_LRS"
-
-# Connect to AzureAd
-Connect-AzureAD
-
-# Get the right subscriptions
-$allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
-$prompt2 = Read-Host -Prompt 'Input the name of the second subscription'
-$prompt3 = Read-Host -Prompt 'Input the user domain name'
-$input1 = "*" + $prompt1 + "*"
-$input2 = "*" + $prompt2 + "*"
-$SubOne = $allSubs | Where-Object Name -CLike $input1
-$SubTwo = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
@@ -104,4 +89,4 @@ $settings['application_key'] = $secret.ToString()
 Set-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -AppSettings $settings
 
 # Create Users
-..\Utils\create_users.ps1 $guid1 $prompt3 "m2"
+..\Utils\create_users.ps1 $guid1 $domainname "m2" $userNum
