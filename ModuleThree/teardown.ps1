@@ -2,28 +2,23 @@
 # Both a Storage Account and Key Vault will be deleted if their resource group
 # is deleted.
 
-#Get the right subs
-$allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the start subscription.'
-$prompt2 = Read-Host -Prompt 'Input the name of the end subscription.'
-$input1 = "*" + $prompt1 + "*"
-$input2 = "*" + $prompt2 + "*"
-$SubOne = $allSubs | Where-Object Name -CLike $input1
-$SubTwo = $allSubs | Where-Object Name -CLike $input2
+param($SubOne, $SubTwo)
+Write-Host "`n          =====Tearing Down Module Three=====`n"
 
-# Delete Service Principles
-Connect-AzureAD
+# Delete Service Principals
+# Connect-AzureAD
 $sps = Get-AzureADApplication
 $toDel = $sps | Where-Object DisplayName -Clike "m3*"
 foreach ($app in $toDel) {
     Remove-AzureADApplication -ObjectId $app.ObjectId
 }
 
+Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
+
 # Delete created users and group
 ..\Utils\delete_users.ps1 "m3"
 
 # ------Sub One------ #
-Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Get the right resource group
 $allRGs1 = Get-AzResourceGroup

@@ -2,6 +2,8 @@
 
 # Get the group that the users are in
 param($module)
+Write-Host "Deleting $module users"
+
 $groups = Get-AzAdGroup
 $groupname = $module + "*"
 $toDel = $groups | Where-Object DisplayName -Clike $groupname

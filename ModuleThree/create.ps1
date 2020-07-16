@@ -1,10 +1,8 @@
 # This PowerShell Script will create Module 3
 
-# Import Functions
-$wd = Get-Location
-$len = $wd.ToString().Length
-$modules = $wd.ToString().Substring(0,$len-12) + "\Utils\functions"
-Import-Module -Name $modules 
+param($SubOne, $SubTwo, $userNum, $domainname)
+
+Write-Host "`n          =====Creating Module Three=====`n"
 
 # Create some names
 # Substring some guids first
@@ -27,20 +25,6 @@ $Blob2Name = "m3resources"
 
 $Location = "westus"
 $SKU = "Standard_LRS"
-
-# Connect to AzureAd and AzureCLI
-Connect-AzureAD
-Az login
-
-# Get the right subscriptions
-$allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the start subscription'
-$prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
-$prompt3 = Read-Host -Prompt 'Input the user domain name'
-$input1 = "*" + $prompt1 + "*"
-$input2 = "*" + $prompt2 + "*"
-$SubOne = $allSubs | Where-Object Name -CLike $input1
-$SubTwo = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
@@ -101,7 +85,7 @@ Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $Blob2Name -Blob f
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Create Users
-..\Utils\create_users.ps1 $guid1 $prompt3 "m3"
+..\Utils\create_users.ps1 $guid1 $domainname "m3" $userNum
 
 # Deploy function to function app
 func azure functionapp publish $functionApp --force

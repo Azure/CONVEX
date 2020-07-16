@@ -1,10 +1,8 @@
 ﻿# This PowerShell Script will create Module 1
 
-# Import Functions
-$wd = Get-Location
-$len = $wd.ToString().Length
-$modules = $wd.ToString().Substring(0,$len-10) + "\Utils\functions"
-Import-Module -Name $modules 
+param($SubTwo, $SubOne, $userNum, $domainname)
+
+Write-Host "`n          =====Creating Module One=====`n"
 
 # Name some names
 # Get Guids
@@ -25,16 +23,6 @@ $UserVaultName = "m1userkv" + $guid2
 
 $Location = "westus"
 $SKU = "Standard_LRS"
-
-# Get the right subscriptions
-$allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the first subscription'
-$prompt2 = Read-Host -Prompt 'Input the name of the second subscription'
-$prompt3 = Read-Host -Prompt 'Input the user domain name'
-$input1 = "*" + $prompt1 + "*"
-$input2 = "*" + $prompt2 + "*"
-$SubTwo = $allSubs | Where-Object Name -CLike $input1
-$SubOne = $allSubs | Where-Object Name -CLike $input2
 
 Get-AzSubscription –SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
@@ -75,4 +63,4 @@ New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceNam
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $KeyName -SecretValue $SecretKey1
 
 # Create the Users
-..\Utils\create_users.ps1 $guid1 $prompt3 "m1"
+..\Utils\create_users.ps1 $guid1 $domainname "m1" $userNum
