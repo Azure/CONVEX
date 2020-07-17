@@ -33,8 +33,8 @@ do {
 
 # Which modules to create/teardown?
 Write-Host "Enter the modules you want to $decision, comma separated if there are multiple. `r"
-Write-Host "For example, for Modules One and Two, you could enter 'ModuleOne, ModuleTwo' or 'm1,m2'`n"
-$modules = Read-Host
+Write-Host "For example, for Modules One and Two, you could enter 'ModuleOne, ModuleTwo' or 'm1,m2'"
+$modules = Read-Host -Prompt "Enter module name(s)"
 
 # If creating, ask for the number of users
 if ($decision -eq "create") {

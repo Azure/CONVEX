@@ -29,3 +29,5 @@ for ($cur = 1; $cur -le $n; $cur++) {
     # Store username and password in keyvault 
     Set-AzKeyVaultSecret -VaultName $UserKV.Name -Name $displayname -SecretValue $sspw
 }
+
+Write-Host "Finished creating $module users"
