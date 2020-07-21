@@ -18,6 +18,9 @@ Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-A
 # Delete created users and group
 ..\Utils\delete_users.ps1 "m3"
 
+# Delete dummy value 
+Remove-AzADUser -DisplayName "JohnDoe" -Force
+
 # ------Sub One------ #
 
 # Get the right resource group
