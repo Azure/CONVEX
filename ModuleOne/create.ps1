@@ -13,7 +13,7 @@ $guid2 = Get-GuidSS
 $RG1Name = "m1rg1" + $guid1
 $SAName = "m1sa" + $guid1
 $KeyName = "SAKey1"
-$BlobName = "m1blob"
+$BlobName = "m1resources"
 $FileName = "m1Flag.txt"
 
 # RG Two
@@ -62,7 +62,7 @@ New-AzResourceGroup -Name $RG2Name -Location $Location
 # Create Key Vaults
 Write-Host "Creating starting Key Vault"
 $theVault = New-AzKeyVault -Name $VaultName -ResourceGroupName $RG2Name -Location $Location
-Write-Host "Sstarting Key Vault created"
+Write-Host "Starting Key Vault created"
 Write-Host "Creating User Key Vault"
 New-AzKeyVault -Name $UserVaultName -ResourceGroupName $RG2Name -Location $Location
 Write-Host "User Key Vault created"

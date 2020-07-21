@@ -26,16 +26,22 @@ $SKU = "Standard_LRS"
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Create security group
+Write-Host "Creating security group"
 $groupname = "m2_" + $guid1
 $group = New-AzADGroup -DisplayName $groupname -MailNickname "m2_group_nick"
+Write-Host "Security group created"
 
 # ------In Sub One------ #
 # Create Resoure Group
 New-AzResourceGroup -Name $RG1Name -Location $Location
 
 # Create User Key Vault and App Service
+Write-Host "Creating $UserVaultName Storage Account"
 New-AzKeyVault -Name $UserVaultName -ResourceGroupName $RG1Name -Location $Location
+Write-Host "$UserVaultName Storage Account created"
+Write-Host "Creating $RG1Name Web App"
 New-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -Location $Location
+Write-Host "$RG1Name Web App created"
 
 # Assign Group Access
 New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Contributor -ResourceName $webServiceName -ResourceType Microsoft.Web/sites -ResourceGroupName $RG1Name
@@ -48,22 +54,28 @@ Get-AzSubscription -SubscriptionId $SubTwo.Id -TenantId $SubTwo.TenantId | Set-A
 New-AzResourceGroup -Name $RG2Name -Location $Location
 
 # Create Key Vault and Storage Account
+Write-Host "Creating Key Vault"
 $theVault = New-AzKeyVault -Name $VaultName -ResourceGroupName $RG2Name -Location $Location
+Write-Host "Key Vault created"
+Write-Host "Creating $RG2Name Storage Account"
 New-AzStorageAccount -ResourceGroupName $RG2Name -AccountName $SA2Name -Location $Location -SkuName $SKU
+Write-Host "$RG2Name Storage Account created"
 $Key1 = (Get-AzStorageAccountKey -ResourceGroupName $RG2Name -Name $SA2Name) | Where-Object {$_.KeyName -eq "key1"}
 
 # Create the Service Principles
-$sp1Name = "m2participant"
+Write-Host "Creating Service Principals"
+$sp1Name = "m2webapp"
 $sp1Scope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name + '/providers/Microsoft.KeyVault/vaults/' + $VaultName
 $sp1 = New-AzADServicePrincipal -DisplayName $sp1Name -Role Reader -Scope $sp1Scope
-$sp2Name = "m2admin"
+$sp2Name = "m2webapp-admin"
 $sp2Scope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name
 $sp2 = New-AzADServicePrincipal -DisplayName $sp2Name -Scope $sp2Scope
+Write-Host "Service Principals created"
 
 # Add the flag to the SA
 $ctx = New-AzStorageContext -StorageAccountName $SA2Name -StorageAccountKey $Key1.Value
 New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
-Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob flag -Context $ctx
+Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob flag.txt -Context $ctx
 
 # Add in the appKey to the prived app
 Set-AzKeyVaultSecret -VaultName $theVault.VaultName -Name "appKey" -SecretValue $sp2.Secret
@@ -75,6 +87,7 @@ Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $sp1.Id -Per
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
 
 # Update App Settings to include App1 id and key
+Write-Host "Updating Web App Application settings"
 $webapp = Get-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName
 $appSettings = $webApp.SiteConfig.AppSettings
 $settings = @{}
@@ -87,6 +100,7 @@ $secret = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sp1.Secr
 $secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($secret)
 $settings['application_key'] = $secret.ToString()
 Set-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -AppSettings $settings
+Write-Host "Web App Application settings updated"
 
 # Create Users
 ..\Utils\create_users.ps1 $guid1 $domainname "m2" $userNum
