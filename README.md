@@ -37,7 +37,7 @@ Cloud Open-source Network Vulnerability Exploitation eXperience (CONVEX) spins u
  ## Notes
  - Everytime convex.ps1 is run, it will either create or teardown modules, but not both. It can, however, create or teardown multiple modules with one call.
  - Tearing down a module will delete the environment as well as removing the participant accounts and that module's specific security group from the Azure tenant. 
-
+ ---
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
