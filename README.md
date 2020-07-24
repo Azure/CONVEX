@@ -7,7 +7,9 @@ Cloud Open-source Network Vulnerability Exploitation eXperience (CONVEX) spins u
 ## Getting Started
 
 ### Prerequisites
- - The identity used to run convex.ps1 needs to have enough permissions to create resources, groups, users, and service principals within the Azure tenant
+ - There are two identities to keep in mind when deploying, the administrator and the participant(s).
+   - The administrator identity is the one running convex.ps1 and deploying the modules. They must have sufficient permissions to create resources, groups, users, and service principals. The administrator is also responsible for giving participants their login credentials.
+   - The participant(s) identities are the ones playing the CTFs. They have their identites provisioned to them by the administrator.
  - An empty Azure tenant with two subscriptions. Do **NOT** run CTF exercises in a production environment. Modules use start and end subscriptions, where start refers to where participants begin and end refers to where the flag is located.
  - Install [Stormspotter](https://github.com/Azure/Stormspotter/). Stormspotter is an open-source tool from Azure Red Team used to create an attack graph of Azure subscriptions.
  
