@@ -3,10 +3,10 @@
 # is deleted.
 
 param($SubOne, $SubTwo)
+$ErrorActionPreference = 'silentycontinue'
 Write-Host "`n          =====Tearing Down Module Three=====`n"
 
 # Delete Service Principals
-# Connect-AzureAD
 $sps = Get-AzureADApplication
 $toDel = $sps | Where-Object DisplayName -Clike "m3*"
 foreach ($app in $toDel) {

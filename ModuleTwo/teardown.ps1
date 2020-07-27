@@ -3,6 +3,7 @@
 # is deleted.
 
 param($SubOne, $SubTwo)
+$ErrorActionPreference = 'silentycontinue'
 Write-Host "`n          =====Tearing Down Module Two=====`n"
 
 # Delete Service Principles

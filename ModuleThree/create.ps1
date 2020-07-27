@@ -51,7 +51,7 @@ $Key1 = (Get-AzStorageAccountKey -ResourceGroupName $RG1Name -Name $SA1Name) | W
 Write-Host "Creating $functionApp Function App"
 New-AzFunctionApp -Name $functionApp -ResourceGroupName $RG1Name -Location $Location -StorageAccountName $SA1Name -Runtime PowerShell
 Write-Host "Function App created"
-New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $functionApp -ResourceType Microsoft.Insights/actiongroups -ResourceGroupName $RG1Name
+New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $functionApp -ResourceType Microsoft.Insights/components -ResourceGroupName $RG1Name
 
 # Create function
 func new -n $function -t "Timer trigger" -l PowerShell

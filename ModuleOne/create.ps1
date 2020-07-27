@@ -10,14 +10,14 @@ $guid1 = Get-GuidSS
 $guid2 = Get-GuidSS
 
 # RG One
-$RG1Name = "m1rg1" + $guid1
+$RG1Name = "m1rg1" + $guid2
 $SAName = "m1sa" + $guid1
 $KeyName = "SAKey1"
 $BlobName = "m1resources"
 $FileName = "m1Flag.txt"
 
 # RG Two
-$RG2Name = "m1rg2" + $guid2
+$RG2Name = "m1rg2" + $guid1
 $VaultName = "m1kv" + $guid2
 $UserVaultName = "m1userkv" + $guid2
 

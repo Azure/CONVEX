@@ -1,5 +1,13 @@
 # This wrapper function will call on the necessary creation or teardown scripts
 
+# Fail immediately if necessary
+$ErrorActionPreference = 'stop'
+
+# Make sure RM is not installed
+if (Get-Module AzureRM) {
+    Write-Error "AzureRM cannot be installed for CONVEX to run"
+}
+
 # Enable translation between AzureRM and Azure Az
 Enable-AzureRmAlias -Scope CurrentUser
 
@@ -8,19 +16,41 @@ $wd = Get-Location
 $modules = $wd.ToString() + "\Utils\functions"
 Import-Module -Name $modules 
 
-# Connect to AzureAd and AzureCLI
-Connect-AzAccount
-Connect-AzureAD
-Az login
+# Connect to Azure Module
+try {
+    Disconnect-AzAccount
+    Connect-AzAccount
+} catch {Write-Error "Azure Powershell module must be installed and authenticated"}
+
+# Connect to AzureAD
+try {
+    Connect-AzureAD
+} catch {Write-Error "AzureAD PowerShell module must be installed and authenticated"}
+
+# Connect to AzureCLI
+try {
+    $login = az login | ConvertFrom-Json
+} catch {Write-Error "Azure CLI must be installed and authenticated"}
+
+
+# Print out available subs
+$login.Name
+Write-Host ""
 
 # Get the start and end subscriptions
-$allSubs = Get-AzSubscription
-$prompt1 = Read-Host -Prompt 'Input the name of the start subscription'
-$prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
-$input1 = "*" + $prompt1 + "*"
-$input2 = "*" + $prompt2 + "*"
-$SubOne = $allSubs | Where-Object Name -CLike $input1
-$SubTwo = $allSubs | Where-Object Name -CLike $input2
+try 
+{
+    $allSubs = Get-AzSubscription
+    $prompt1 = Read-Host -Prompt 'Input the name of the start subscription'
+    $prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
+    $input1 = "*" + $prompt1 + "*"
+    $input2 = "*" + $prompt2 + "*"
+    $SubOne = $allSubs | Where-Object Name -CLike $input1
+    $SubTwo = $allSubs | Where-Object Name -CLike $input2
+} catch 
+{
+    Write-Host "Error getting subscriptions from Az PowerShell Identity" -ForegroundColor Yellow
+}
 
 # Decide if we are creating or deleting modules
 $cOrT = "create","teardown"
@@ -35,47 +65,31 @@ do {
     }
 } while ((($decision -ne "create") -and ($decision -ne "teardown")) -or !$decision)
 
-# Which modules to create/teardown?
-Write-Host "Enter the modules you want to $decision, comma separated if there are multiple. `r"
-Write-Host "For example, for Modules One and Two, you could enter 'ModuleOne, ModuleTwo' or 'm1,m2'"
-$modules = Read-Host -Prompt "Enter module name(s)"
-
 # If creating, ask for the number of users
 if ($decision -eq "create") {
-    $users = Read-Host -Prompt "How many users would you like?"
+    do 
+    {
+        try
+        {
+            [ValidateRange(1, [int]::MaxValue)] $users = Read-Host -Prompt "How many users would you like?"
+        } catch {}
+    } until ($?)
     $domainname = Read-Host -Prompt "What domain name will the user account(s) use?"
 }
 
-# Modify String
-$modules = $modules.Replace(" ","")
-
 # Either create or teardown each module
-$res
-foreach ($mod in $modules.Split(",")) {
-    
-    # Finding the module name
-    if (($mod -eq "moduleone") -or ($mod -eq "module1") -or ($mod -eq "m1")) {
-        $res = "ModuleOne"
-    } elseif (($mod -eq "moduletwo") -or ($mod -eq "module2") -or ($mod -eq "m2")) {
-        $res = "ModuleTwo"
-    } elseif(($mod -eq "modulethree") -or ($mod -eq "module3") -or ($mod -eq "m3")) {
-        $res = "ModuleThree"}
-    else {
-        Write-Host "$mod is not a recognized module name`n"
-        $res = $null
-    }
+$dirs = Get-ChildItem . -Directory | Where-Object Name -CLike Module*
+foreach ($mod in $dirs.Name) {
 
     # Create or delete
-    if ($res) {
-        if ($decision -eq "create") {
-            Set-Location .\$res
-            .\create.ps1 $SubOne $SubTwo $users $domainname
-            Set-Location ..
-        } else {
-            Set-Location .\$res
-            .\teardown $SubOne $SubTwo
-            Set-Location ..
-        }
+    if ($decision -eq "create") {
+        Set-Location .\$mod
+        .\create.ps1 $SubOne $SubTwo $users $domainname
+        Set-Location ..
+    } else {
+        Set-Location .\$mod
+        .\teardown $SubOne $SubTwo
+        Set-Location ..
     }
 }
 

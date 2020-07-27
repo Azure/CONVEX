@@ -3,7 +3,7 @@
 # is deleted.
 
 param($SubOne, $SubTwo)
-
+$ErrorActionPreference = 'silentycontinue'
 Write-Host "`n          =====Tearing Down Module One=====`n"
 
 Get-AzSubscription –SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
