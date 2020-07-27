@@ -1,11 +1,15 @@
 # This wrapper function will call on the necessary creation or teardown scripts
 
+# Enable translation between AzureRM and Azure Az
+Enable-AzureRmAlias -Scope CurrentUser
+
 # Import Functions
 $wd = Get-Location
 $modules = $wd.ToString() + "\Utils\functions"
 Import-Module -Name $modules 
 
 # Connect to AzureAd and AzureCLI
+Connect-AzAccount
 Connect-AzureAD
 Az login
 

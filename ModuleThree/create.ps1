@@ -33,7 +33,7 @@ Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-A
 # Create security group
 Write-Host "Creating security group"
 $groupname = "m3_" + $guid1
-New-AzADGroup -DisplayName $groupname -MailNickname "m3_group_nick"
+$group = New-AzADGroup -DisplayName $groupname -MailNickname "m3_group_nick"
 Write-Host "Security group created"
 
 # ------In Sub One------ #
@@ -51,6 +51,7 @@ $Key1 = (Get-AzStorageAccountKey -ResourceGroupName $RG1Name -Name $SA1Name) | W
 Write-Host "Creating $functionApp Function App"
 New-AzFunctionApp -Name $functionApp -ResourceGroupName $RG1Name -Location $Location -StorageAccountName $SA1Name -Runtime PowerShell
 Write-Host "Function App created"
+New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $functionApp -ResourceType Microsoft.Insights/actiongroups -ResourceGroupName $RG1Name
 
 # Create function
 func new -n $function -t "Timer trigger" -l PowerShell
@@ -98,6 +99,8 @@ $sspw = ConvertTo-SecureString -String $ptpw -AsPlainText -Force
 $duser = New-AzADUser -DisplayName $displayname -UserPrincipalName $upn -Password $sspw -MailNickname $displayname
 $dscope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name + '/providers/Microsoft.Storage/storageAccounts/' + $SA2Name
 New-AzRoleAssignment -ObjectId $duser.Id -RoleDefinitionName "Storage Blob Data Reader" -Scope $dscope
+$dscope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name
+New-AzRoleAssignment -ObjectId $duser.Id -RoleDefinitionName Reader -Scope $dscope
 Write-Host "John Doe created"
 
 # Add user info to KV
