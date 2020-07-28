@@ -10,7 +10,7 @@ if (Get-Module -name AzureRM -list) {Write-Error "AzureRM cannot be installed fo
 if (-Not (Get-Module -name Azure -list)) {Write-Error "Azure Module needs be installed for CONVEX to run"}
 if (-Not (Get-Module -name AzureAD -list)) {Write-Error "AzureAD Module needs be installed for CONVEX to run"}
 if (-Not (az --version)) {Write-Error "AzureCLI needs be installed for CONVEX to run"}
-if (-Not (func --versions)) {Write-Error "Azure Function Core Tools needs to be installed for CONVEX to run"}
+if (-Not (func --version)) {Write-Error "Azure Function Core Tools needs to be installed for CONVEX to run"}
 
 # Enable translation between AzureRM and Azure Az
 Enable-AzureRmAlias -Scope CurrentUser
@@ -39,35 +39,45 @@ try {
 
 # Print out available subs
 $login.Name
+$subNames = New-Object System.Collections.Generic.List[System.Object]
+foreach ($name in $login.Name) {$subNames.Add($name)}
 Write-Host ""
 
-# Get the start and end subscriptions
-try 
-{
-    $allSubs = Get-AzSubscription
+# Try getting all of the subs
+try {$allSubs = Get-AzSubscription -ErrorAction 'stop'} 
+catch{Write-Host "Error getting subscriptions from Az PowerShell Identity" -ForegroundColor Yellow}
+
+# Get the first sub name and store the value
+do {
     $prompt1 = Read-Host -Prompt 'Input the name of the start subscription'
-    $prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
     $input1 = "*" + $prompt1 + "*"
-    $input2 = "*" + $prompt2 + "*"
     $SubOne = $allSubs | Where-Object Name -CLike $input1
+    $s1 = $subNames.Contains($SubOne.Name)
+    if (-Not $s1) {Write-Host "Not a valid subscription"}
+} until ($s1)
+
+# Remove sub one to avoid repeats
+$null = $subNames.Remove($SubOne.Name)
+
+# Get the second sub and store the value
+do {
+    $prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
+    $input2 = "*" + $prompt2 + "*"
     $SubTwo = $allSubs | Where-Object Name -CLike $input2
-} catch 
-{
-    Write-Host "Error getting subscriptions from Az PowerShell Identity" -ForegroundColor Yellow
-}
+    $s2 = $subNames.Contains($SubTwo.Name)
+    if ($SubTwo.Name -eq $SubOne.Name) {Write-Host "That subscription is already being used"}
+    elseif (-Not $s2) {Write-Host "Not a valid subscription"}
+} until ($s2)
 
 # Decide if we are creating or deleting modules
-$cOrT = "create","teardown"
+$cOrT =@()
+$cOrT += "create"
+$cOrT += "teardown"
 do {
-    $prompt3 = Read-Host -Prompt 'Do you want to create or teardown modules?'
-    $input3 = $input3 + "*"
-    $decision = $cOrT -match $prompt3
-    if ((($decision -ne "create") -and ($decision -ne "teardown")) -or !$decision) {
-        Write-Host "That wasn't a valid input, try again `n"
-    } else {
-        break
-    }
-} while ((($decision -ne "create") -and ($decision -ne "teardown")) -or !$decision)
+    $decision = Read-Host -Prompt 'Do you want to create or teardown modules?'
+    $d1 = $cOrT.Contains($decision)
+    if (-Not $d1) {Write-Host "Not a valid input"}
+} until ($d1)
 
 # If creating, ask for the number of users
 if ($decision -eq "create") {
@@ -78,7 +88,13 @@ if ($decision -eq "create") {
             [ValidateRange(1, [int]::MaxValue)] $users = Read-Host -Prompt "How many users would you like?"
         } catch {}
     } until ($?)
-    $domainname = Read-Host -Prompt "What domain name will the user account(s) use?"
+    do 
+    {
+        try {
+            $domainname = Read-Host -Prompt "What domain name will the user account(s) use?"
+            $check = Get-AzureADDomain -Name $domainname -ErrorAction 'stop'            
+        } catch {}
+    } until ($check)
 }
 
 # Either create or teardown each module
@@ -86,14 +102,11 @@ $dirs = Get-ChildItem . -Directory | Where-Object Name -CLike Module*
 foreach ($mod in $dirs.Name) {
 
     # Create or delete
+    Set-Location .\$mod
     if ($decision -eq "create") {
-        Set-Location .\$mod
         .\create.ps1 $SubOne $SubTwo $users $domainname
-        Set-Location ..
     } else {
-        Set-Location .\$mod
         .\teardown $SubOne $SubTwo
-        Set-Location ..
     }
+    Set-Location ..
 }
-
