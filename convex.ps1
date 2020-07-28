@@ -4,9 +4,13 @@
 $ErrorActionPreference = 'stop'
 
 # Make sure RM is not installed
-if (Get-Module AzureRM) {
-    Write-Error "AzureRM cannot be installed for CONVEX to run"
-}
+if (Get-Module -name AzureRM -list) {Write-Error "AzureRM cannot be installed for CONVEX to run"}
+
+# Make sure the three required modules are installed
+if (-Not (Get-Module -name Azure -list)) {Write-Error "Azure Module needs be installed for CONVEX to run"}
+if (-Not (Get-Module -name AzureAD -list)) {Write-Error "AzureAD Module needs be installed for CONVEX to run"}
+if (-Not (az --version)) {Write-Error "AzureCLI needs be installed for CONVEX to run"}
+if (-Not (func --versions)) {Write-Error "Azure Function Core Tools needs to be installed for CONVEX to run"}
 
 # Enable translation between AzureRM and Azure Az
 Enable-AzureRmAlias -Scope CurrentUser
