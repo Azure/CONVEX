@@ -28,7 +28,6 @@ try {
 
 # Connect to AzureAD
 try {
-    Disconnect-AzureAD
     Connect-AzureAD
 } catch {Write-Error "AzureAD PowerShell module must be installed and authenticated."}
 
