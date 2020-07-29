@@ -24,19 +24,19 @@ Import-Module -Name $modules
 try {
     Disconnect-AzAccount
     Connect-AzAccount
-} catch {Write-Error "Azure Powershell module must be installed and authenticated"}
+} catch {Write-Error "Azure Powershell module must be installed and authenticated."}
 
 # Connect to AzureAD
 try {
     Disconnect-AzureAD
     Connect-AzureAD
-} catch {Write-Error "AzureAD PowerShell module must be installed and authenticated"}
+} catch {Write-Error "AzureAD PowerShell module must be installed and authenticated."}
 
 # Connect to AzureCLI
 try {
     az logout
     $login = az login | ConvertFrom-Json
-} catch {Write-Error "Azure CLI must be installed and authenticated"}
+} catch {Write-Error "Azure CLI must be installed and authenticated."}
 
 
 # Print out available subs
