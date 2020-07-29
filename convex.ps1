@@ -28,11 +28,13 @@ try {
 
 # Connect to AzureAD
 try {
+    Disconnect-AzureAD
     Connect-AzureAD
 } catch {Write-Error "AzureAD PowerShell module must be installed and authenticated"}
 
 # Connect to AzureCLI
 try {
+    az logout
     $login = az login | ConvertFrom-Json
 } catch {Write-Error "Azure CLI must be installed and authenticated"}
 
