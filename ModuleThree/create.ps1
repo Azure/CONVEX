@@ -101,6 +101,7 @@ $dscope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name + '/pro
 New-AzRoleAssignment -ObjectId $duser.Id -RoleDefinitionName "Storage Blob Data Reader" -Scope $dscope
 $dscope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name
 New-AzRoleAssignment -ObjectId $duser.Id -RoleDefinitionName Reader -Scope $dscope
+New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -Scope $dscope
 Write-Host "John Doe created"
 
 # Add user info to KV

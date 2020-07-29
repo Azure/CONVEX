@@ -4,13 +4,13 @@
 $ErrorActionPreference = 'stop'
 
 # Make sure RM is not installed
-if (Get-Module -name AzureRM -list) {Write-Error "AzureRM cannot be installed for CONVEX to run"}
+if (Get-Module -name AzureRM -list) {Write-Error "AzureRM cannot be installed for CONVEX to run. Please uninstall AzureRM and install the new Azure Module, AzureAD, Azure CLI, and Azure Function Core Tools."}
 
 # Make sure the three required modules are installed
-if (-Not (Get-Module -name Azure -list)) {Write-Error "Azure Module needs be installed for CONVEX to run"}
-if (-Not (Get-Module -name AzureAD -list)) {Write-Error "AzureAD Module needs be installed for CONVEX to run"}
-if (-Not (az --version)) {Write-Error "AzureCLI needs be installed for CONVEX to run"}
-if (-Not (func --version)) {Write-Error "Azure Function Core Tools needs to be installed for CONVEX to run"}
+if (-Not (Get-Module -name Azure -list)) {Write-Error "Azure Module needs be installed for CONVEX to run. Please uninstall AzureRM and install the new Azure Module, AzureAD, Azure CLI, and Azure Function Core Tools."}
+if (-Not (Get-Module -name AzureAD -list)) {Write-Error "AzureAD Module needs be installed for CONVEX to run. Please uninstall AzureRM and install the new Azure Module, AzureAD, Azure CLI, and Azure Function Core Tools."}
+if (-Not (az --version)) {Write-Error "AzureCLI needs be installed for CONVEX to run. Please uninstall AzureRM and install the new Azure Module, AzureAD, Azure CLI, and Azure Function Core Tools."}
+if (-Not (func --version)) {Write-Error "Azure Function Core Tools needs to be installed for CONVEX to run. Please uninstall AzureRM and install the new Azure Module, AzureAD, Azure CLI, and Azure Function Core Tools."}
 
 # Enable translation between AzureRM and Azure Az
 Enable-AzureRmAlias -Scope CurrentUser

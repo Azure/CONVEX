@@ -10,14 +10,14 @@ $guid1 = Get-GuidSS
 $guid2 = Get-GuidSS
 
 # RG One
-$RG1Name = "m1rg1" + $guid2
+$RG1Name = "m1rg1" + $guid1
 $SAName = "m1sa" + $guid1
 $KeyName = "SAKey1"
 $BlobName = "m1resources"
 $FileName = "m1Flag.txt"
 
 # RG Two
-$RG2Name = "m1rg2" + $guid1
+$RG2Name = "m1rg2" + $guid2
 $VaultName = "m1kv" + $guid2
 $UserVaultName = "m1userkv" + $guid2
 
@@ -32,7 +32,7 @@ $groupname = "m1_" + $guid1
 $group = New-AzADGroup -DisplayName $groupname -MailNickname "m1_group_nick"
 Write-Host "Security group created"
 
-# ------In Sub One------ #
+# ------In End Sub------ #
 # Create Resoure Group
 New-AzResourceGroup -Name $RG2Name -Location $Location
 
@@ -49,13 +49,13 @@ Write-Host "Adding flag to $SAName"
 New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
 Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob $FileName -Context $ctx
 Write-Host "Flag added to $SAName"
-$scope = '/subscriptions/' + $SubOne.Id + '/resourceGroups/' + $RG1Name + '/providers/Microsoft.Storage/storageAccounts/' + $SAName
+$scope = '/subscriptions/' + $SubOne.Id + '/resourceGroups/' + $RG2Name + '/providers/Microsoft.Storage/storageAccounts/' + $SAName
 New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -Scope $scope
 
 #Switch Subscriptions
 Get-AzSubscription –SubscriptionId $SubTwo.Id -TenantId $SubTwo.TenantId | Set-AzContext
  
-# ------In Sub Two------ #
+# ------In Start Sub------ #
 # Create Resource Group and give Group access
 New-AzResourceGroup -Name $RG1Name -Location $Location
 
