@@ -27,11 +27,11 @@ Cloud Open-source Network Vulnerability Exploitation eXperience (CONVEX) spins u
    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
    choco install azure-functions-core-tools-3
    ```
+ - An empty Azure tenant with at least two subscriptions. Do **NOT** run CTF exercises in a production environment. Modules use start and end subscriptions, where start refers to where participants begin and end refers to where the flag is located.
 
 #### For Participants
 - [Stormspotter](https://github.com/Azure/Stormspotter/) installed. Stormspotter is an open-source tool from Azure Red Team used to create an attack graph of Azure subscriptions.
 - [Postman](https://www.postman.com/) installed. Postman is a free API development tool that lets you easily craft HTTP requests. This is useful when using REST API is simpler than PowerShell.
-- An empty Azure tenant with at least two subscriptions. Do **NOT** run CTF exercises in a production environment. Modules use start and end subscriptions, where start refers to where participants begin and end refers to where the flag is located.
 
  
  ## Running CONVEX
