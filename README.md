@@ -6,7 +6,14 @@ Cloud Open-source Network Vulnerability Exploitation eXperience (CONVEX) spins u
 
 ## Getting Started
 
+### Identities Involved
+- There are two identities to keep in mind when deploying, the administrator and the participant(s).
+   - The administrator identity is the one running convex.ps1 and deploying the modules. They must have sufficient permissions to create resources, groups, users, and service principals. The administrator is also responsible for giving participants their login credentials.
+   - The participant(s) identities are the ones playing the CTFs. They have their identites provisioned to them by the administrator.
+   
 ### Prerequisites
+
+#### For Administrators
 - The installation and running should be done with PowerShell running as Administrator. In addition, in order to run the script, the `ExecutionPolicy` must be set to `Unrestricted`. To change this, you can run this command
    ```
    Set-ExecutionPolicy Unrestricted
@@ -20,13 +27,11 @@ Cloud Open-source Network Vulnerability Exploitation eXperience (CONVEX) spins u
    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
    choco install azure-functions-core-tools-3
    ```
-- [Stormspotter](https://github.com/Azure/Stormspotter/) installed. Stormspotter is an open-source tool from Azure Red Team used to create an attack graph of Azure subscriptions.
-- An empty Azure tenant with at least two subscriptions. Do **NOT** run CTF exercises in a production environment. Modules use start and end subscriptions, where start refers to where participants begin and end refers to where the flag is located.
+ - An empty Azure tenant with at least two subscriptions. Do **NOT** run CTF exercises in a production environment. Modules use start and end subscriptions, where start refers to where participants begin and end refers to where the flag is located.
 
-### Identities Involved
-- There are two identities to keep in mind when deploying, the administrator and the participant(s).
-   - The administrator identity is the one running convex.ps1 and deploying the modules. They must have sufficient permissions to create resources, groups, users, and service principals. The administrator is also responsible for giving participants their login credentials.
-   - The participant(s) identities are the ones playing the CTFs. They have their identites provisioned to them by the administrator.
+#### For Participants
+- [Stormspotter](https://github.com/Azure/Stormspotter/) installed. Stormspotter is an open-source tool from Azure Red Team used to create an attack graph of Azure subscriptions.
+- [Postman](https://www.postman.com/) installed. Postman is a free API development tool that lets you easily craft HTTP requests. This is useful when using REST API is simpler than PowerShell.
 
  
  ## Running CONVEX
