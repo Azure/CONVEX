@@ -34,39 +34,39 @@ try {
 # Connect to AzureCLI
 try {
     az logout
-    $login = az login | ConvertFrom-Json
+   $login = az login --only-show-errors| ConvertFrom-Json
 } catch {Write-Error "Azure CLI must be installed and authenticated."}
 
 
 # Print out available subs
-$login.Name
-$subNames = New-Object System.Collections.Generic.List[System.Object]
-foreach ($name in $login.Name) {$subNames.Add($name)}
+$login | Select-Object Name, id
+$subIds = New-Object System.Collections.Generic.List[System.Object]
+foreach ($id in $login.id) {$subIds.Add($id)}
 Write-Host ""
 
 # Try getting all of the subs
 try {$allSubs = Get-AzSubscription -ErrorAction 'stop'} 
 catch{Write-Host "Error getting subscriptions from Az PowerShell Identity" -ForegroundColor Yellow}
 
-# Get the first sub name and store the value
+# Get the first sub id and store the value
 do {
-    $prompt1 = Read-Host -Prompt 'Input the name of the start subscription'
+    $prompt1 = Read-Host -Prompt 'Input the Id of the start subscription'
     $input1 = "*" + $prompt1 + "*"
-    $SubOne = $allSubs | Where-Object Name -CLike $input1
-    $s1 = $subNames.Contains($SubOne.Name)
+    $SubOne = $allSubs | Where-Object id -CLike $input1
+    $s1 = $subIds.Contains($SubOne.Id)
     if (-Not $s1) {Write-Host "Not a valid subscription"}
 } until ($s1)
 
 # Remove sub one to avoid repeats
-$null = $subNames.Remove($SubOne.Name)
+$null = $subIds.Remove($SubOne.Id)
 
 # Get the second sub and store the value
 do {
-    $prompt2 = Read-Host -Prompt 'Input the name of the end subscription'
+    $prompt2 = Read-Host -Prompt 'Input the id of the end subscription'
     $input2 = "*" + $prompt2 + "*"
-    $SubTwo = $allSubs | Where-Object Name -CLike $input2
-    $s2 = $subNames.Contains($SubTwo.Name)
-    if ($SubTwo.Name -eq $SubOne.Name) {Write-Host "That subscription is already being used"}
+    $SubTwo = $allSubs | Where-Object id -CLike $input2
+    $s2 = $subIds.Contains($SubTwo.Id)
+    if ($SubTwo.Id -eq $SubOne.Id) {Write-Host "That subscription is already being used"}
     elseif (-Not $s2) {Write-Host "Not a valid subscription"}
 } until ($s2)
 

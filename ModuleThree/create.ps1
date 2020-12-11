@@ -24,7 +24,7 @@ $VaultName = "m3kv" + $guid2
 $SA2Name = "m3sa" + $guid2
 $Blob2Name = "m3resources"
 
-$Location = "westus"
+$Location = "westus2"
 $SKU = "Standard_LRS"
 
 # Switch Subscriptions
@@ -48,10 +48,16 @@ Write-Host "Creating $RG1Name Storage Account"
 New-AzStorageAccount -ResourceGroupName $RG1Name -AccountName $SA1Name -Location $Location -SkuName $SKU
 Write-Host "$RG1Name Storage Account created"
 $Key1 = (Get-AzStorageAccountKey -ResourceGroupName $RG1Name -Name $SA1Name) | Where-Object {$_.KeyName -eq "key1"}
+Write-Host "Register Function App RP"
+Register-AzResourceProvider -ProviderNamespace Microsoft.Web
 Write-Host "Creating $functionApp Function App"
 New-AzFunctionApp -Name $functionApp -ResourceGroupName $RG1Name -Location $Location -StorageAccountName $SA1Name -Runtime PowerShell
 Write-Host "Function App created"
-New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $functionApp -ResourceType Microsoft.Insights/components -ResourceGroupName $RG1Name
+Write-Host "Create AppInsights"
+$appInsightsName = $RG1Name + "appinsights"
+New-AzApplicationInsights -kind web -ResourceGroupName $RG1Name -Name $appInsightsName -Location $Location
+Update-AzFunctionApp -Name $functionApp -ResourceGroupName $RG1Name -ApplicationInsightsName $appInsightsName
+New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $appInsightsName -ResourceType Microsoft.Insights/components -ResourceGroupName $RG1Name
 
 # Create function
 func new -n $function -t "Timer trigger" -l PowerShell
