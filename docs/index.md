@@ -1,37 +1,30 @@
-## Welcome to GitHub Pages
+## CTF Writeup and Solutions
 
-You can use the [editor on GitHub](https://github.com/JonLMyers/CONVEX/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+### Module 1
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+After logging into the [Azure Portal](http://portal.azure.com/) all resources can be listed to gain a better idea as to what this account has access to.
 
-### Markdown
+![All Resources](/dcos/assets/1_allresources)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Here, you should see a Key Vault and a Storage Account. While you do not have access to read any container in the Storage Account, you do have access to the Key Vault.  These permissions can be found under the Access Control (IAM) tab on each resource.
 
-```markdown
-Syntax highlighted code block
+![KeyvaultRole](/dcos/assets/2_keyvaultrole)
 
-# Header 1
-## Header 2
-### Header 3
+The primary purpose of Key Vaults is to store secrets, so using the reader permissions on the account you can view all of the keys, secrets, and certificates stored in the vault.
 
-- Bulleted
-- List
+![Keyvault](/dcos/assets/3_keyvault)
 
-1. Numbered
-2. List
+Once you have navigated to the secret’s page, you can see the hidden secret value at the bottom of the page. You then view the hidden value and copy it directly to your clipboard.
+Since the only other resource in this subscription is a storage account, and the title of this key is SAkey1 we can assume this is the credential needed to access the storage account.
+[Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) allows you to connect a Storage Account using only the name of a Storage Account as well as one of its two keys. 
+Fill out Azure Storage Explorer's connection wizard (Display name can be anything you want) using the name, which you can copy directly from the Azure portal, and the key that you have grabbed from the Key Vault.
 
-**Bold** and _Italic_ and `Code` text
+![AzureStorage](/dcos/assets/4_AzureStorageCon)
 
-[Link](url) and ![Image](src)
-```
+Once connected, expand the Storage Accounts group, the display name you chose, and Blob Containers. From there, select the Blob beginning with m1 and you can download the flag for Module One.
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+![StorageExp](/dcos/assets/5_storageExplorer)
 
-### Jekyll Themes
+### Module 2
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/JonLMyers/CONVEX/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Module 3
