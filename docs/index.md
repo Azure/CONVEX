@@ -26,5 +26,26 @@ Once connected, expand the Storage Accounts group, the display name you chose, a
 ![StorageExp](/dcos/assets/5_storageExplorer)
 
 ### Module 2
+This walkthrough assumes that you are now signed in with your module 2 (NOT module 1) participant account in the [Azure portal](http://portal.azure.com/).
+The first step is to navigate to All resources either from the landing page, or by opening the left-hand menu and selecting it from the list.
+The only resource visible is an App Service beginning with m2. Clicking on that and navigating to the Configuration blade will reveal that “application_id” and “application_key” have been left in Application settings. 
+
+![StorageExp](/dcos/assets/6_appconfig)
+
+Clicking on "show value" enables you to access the configuration values for this service.
+First you should enumerate the rest of the tenant using a tool like [StormSpotter](https://github.com/Azure/Stormspotter), an open source ART tool, for scanning. Filtering the items by AADApplication will show two applications, one of which has the same App Id as the one found in Application settings.
+
+Store the application id and key you have in PowerShell variables. 
+Convert the application key to a Secure String and use the Id and Secure Key to create PowerShell credentials and sign into Azure using those credentials.
+
+Once in the first Service Principal, listing out the available resources shows that you have a Key Vault that you have access to. Listing out the secrets shows that it contains another App Key, which we can guess are for the second Service Principal we saw in StormSpotter. StormSpotter gave us the App Id, so we can repeat the method we already used to authenticate previously. 
+Once in the second Service Principal, listing out the available resources shows that we now have a Storage Account that is visible. Using PowerShell, we can list out the Storage Account name and the Resource Group that it is in’s name to get the keys for that Storage Account. 
+The Microsoft Azure Storage Explorer allows you to authenticate into a Storage Account with only a name and key, meaning that you could access the containers in a similar fashion to Module One. Alternatively, you could use PowerShell to list out the Storage Account, Container, and Blob contents. Either way will allow you to download the Module Two flag from the Storage Account blob.
+
+Useful Resources:
+Listing out available resources
+Signing in as a service principal
+Accessing secret values in a Key Vault
+Getting Storage Account Keys
 
 ### Module 3
