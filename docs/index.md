@@ -19,33 +19,49 @@ Since the only other resource in this subscription is a storage account, and the
 [Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer/) allows you to connect a Storage Account using only the name of a Storage Account as well as one of its two keys. 
 Fill out Azure Storage Explorer's connection wizard (Display name can be anything you want) using the name, which you can copy directly from the Azure portal, and the key that you have grabbed from the Key Vault.
 
-![AzureStorage](/dcos/assets/4_AzureStorageCon)
+![AzureStorage](/docs/assets/4_AzureStorageCon)
 
 Once connected, expand the Storage Accounts group, the display name you chose, and Blob Containers. From there, select the Blob beginning with m1 and you can download the flag for Module One.
 
-![StorageExp](/dcos/assets/5_storageExplorer)
+![StorageExp](/docs/assets/5_storageExplorer)
 
 ### Module 2
 This walkthrough assumes that you are now signed in with your module 2 (NOT module 1) participant account in the [Azure portal](http://portal.azure.com/).
 The first step is to navigate to All resources either from the landing page, or by opening the left-hand menu and selecting it from the list.
 The only resource visible is an App Service beginning with m2. Clicking on that and navigating to the Configuration blade will reveal that “application_id” and “application_key” have been left in Application settings. 
 
-![StorageExp](/dcos/assets/6_appconfig)
+![StorageExp](/docs/assets/6_appconfig)
 
-Clicking on "show value" enables you to access the configuration values for this service.
-First you should enumerate the rest of the tenant using a tool like [StormSpotter](https://github.com/Azure/Stormspotter), an open source ART tool, for scanning. Filtering the items by AADApplication will show two applications, one of which has the same App Id as the one found in Application settings.
+Clicking on "Advanced edit" enables you to access the configuration values for this service.
+This is a great time to enumerate the rest of the tenant using a tool like [StormSpotter](https://github.com/Azure/Stormspotter), an open source ART tool, for scanning. Stormspotter is not required for this module as all information can easily be found using the portal and Az CLI but Tools like this will become an invaluable aid when the target subscriptions become vast and complex.
 
-Store the application id and key you have in PowerShell variables. 
-Convert the application key to a Secure String and use the Id and Secure Key to create PowerShell credentials and sign into Azure using those credentials.
+![Stormspotter](/docs/assets/7_better_stormspotter)
 
-Once in the first Service Principal, listing out the available resources shows that you have a Key Vault that you have access to. Listing out the secrets shows that it contains another App Key, which we can guess are for the second Service Principal we saw in StormSpotter. StormSpotter gave us the App Id, so we can repeat the method we already used to authenticate previously. 
-Once in the second Service Principal, listing out the available resources shows that we now have a Storage Account that is visible. Using PowerShell, we can list out the Storage Account name and the Resource Group that it is in’s name to get the keys for that Storage Account. 
+You can now log in to Azure as a service principal using the AppID AppKey found in the previous step.  Service principals are concrete instances created from the application object and inherit certain properties from that application object. This relationship is similar to object oriented programming where the service principal is like an instantiated object while the Application is the class for that object.
+
+```Powershell
+$appid = "<App Id foun in portal"
+$appkey = "App key found in portal"
+az login --service-principal -u $appid -p $appkey --tenant "<Tenent ID found on the Azure Active Directory Homepage>"
+```
+
+Once authenticated using the Service Principal, listing available resources reveals a Key Vault. 
+
+![list](/docs/assets/8_res)
+
+Listing the secrets shows that it contains another App Key, which we can guess is for the second Application. 
+
+![list_kv](/docs/assets/8_kvs)
+
+Once in the second Service Principal, listing out the available resources shows that we now have a Storage Account that is visible. Using PowerShell, we can list the Storage Account name and the Resource Group to obtain the keys for that Storage Account. 
 The Microsoft Azure Storage Explorer allows you to authenticate into a Storage Account with only a name and key, meaning that you could access the containers in a similar fashion to Module One. Alternatively, you could use PowerShell to list out the Storage Account, Container, and Blob contents. Either way will allow you to download the Module Two flag from the Storage Account blob.
 
+![Get Keys](/docs/assets/11_storage2)
+
 Useful Resources:
-Listing out available resources
-Signing in as a service principal
-Accessing secret values in a Key Vault
-Getting Storage Account Keys
+[Listing out available resources](https://docs.microsoft.com/en-us/powershell/module/az.resources/get-azresource?view=azps-4.4.0)
+[Signing in as a service principal](https://docs.microsoft.com/en-us/powershell/azure/authenticate-azureps?view=azps-4.4.0#sign-in-with-a-service-principal-)
+[Accessing secret values in a Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/secrets/quick-create-powershell#adding-a-secret-to-key-vault)
+[Getting Storage Account Keys](https://docs.microsoft.com/en-us/powershell/module/az.storage/get-azstorageaccountkey?view=azps-4.4.0)
 
 ### Module 3
