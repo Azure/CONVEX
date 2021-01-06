@@ -51,7 +51,7 @@ Once authenticated using the Service Principal, listing available resources reve
 
 Listing the secrets shows that it contains another App Key, which we can guess is for the second Application. 
 
-![list_kv](/docs/Screenshots/8_kvs.png)
+![list_kv](/docs/Screenshots/9_kvs.png)
 
 Once in the second Service Principal, listing out the available resources shows that we now have a Storage Account that is visible. Using PowerShell, we can list the Storage Account name and the Resource Group to obtain the keys for that Storage Account. 
 The Microsoft Azure Storage Explorer allows you to authenticate into a Storage Account with only a name and key, meaning that you could access the containers in a similar fashion to Module One. Alternatively, you could use PowerShell to list out the Storage Account, Container, and Blob contents. Either way will allow you to download the Module Two flag from the Storage Account blob.
