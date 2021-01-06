@@ -59,9 +59,28 @@ The Microsoft Azure Storage Explorer allows you to authenticate into a Storage A
 ![Get Keys](/docs/assets/11_storage2)
 
 Useful Resources:
+
 [Listing out available resources](https://docs.microsoft.com/en-us/powershell/module/az.resources/get-azresource?view=azps-4.4.0)
+
 [Signing in as a service principal](https://docs.microsoft.com/en-us/powershell/azure/authenticate-azureps?view=azps-4.4.0#sign-in-with-a-service-principal-)
+
 [Accessing secret values in a Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/secrets/quick-create-powershell#adding-a-secret-to-key-vault)
+
 [Getting Storage Account Keys](https://docs.microsoft.com/en-us/powershell/module/az.storage/get-azstorageaccountkey?view=azps-4.4.0)
 
 ### Module 3
+This walkthrough assumes that you are now signed in with your module 3 (NOT module 2) participant account in the [Azure portal](http://portal.azure.com/).
+The first step is to navigate to All resources either from the landing page, or by opening the left-hand menu and selecting it from the list.  The only resource visible should be an Application Insights beginning with m3. 
+
+![Get res_app](/docs/assets/12_allresapp)
+
+Click on that, and then navigate to the Search blade and hit Refresh on the Search menu to populate the results. Once the results are populated, find a trace containing “Authentication complete” by looking at the most recent items. The string following is an access token which can be used to authenticate as the m3aadapp* which has access to a Key Vault.
+
+![log](/docs/assets/13_appinsauth)
+
+After exploring the tenent you will find an m3 Key Vault along with its vaultUri. Using the application Postman, you can authenticate directly to the Key Vault using a GET request. The request URL is https://{vaultUri}/secrets?api-version=7.0 and authorizing using a bearer token where the token is the one grabbed from the Application Insights. You could also attempt to enumerate all resources in the subscription with the access token found in Application Insights, but the response would clue you in to the fact that the token is for a Key Vault specifically.
+
+![postman](/docs/assets/14_postman)
+
+That request will return the secrets present in the Key Vault, once you find the secret you want, you can send the request again but with https://{vaultUri}/secrets/{secretName}?api-version=7.0 as the request URL. Since the secret is a name, we can assume the secret value is the password associated with that user. 
+Logging in with that account (johndoe@<domain name of participant account>) will reveal a new Storage Account in the Azure portal. Going into the m3resources container will show the flag for the third module.
