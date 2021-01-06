@@ -40,7 +40,7 @@ This is a great time to enumerate the rest of the tenant using a tool like [Stor
 You can now log in to Azure as a service principal using the AppID AppKey found in the previous step.  Service principals are concrete instances created from the application object and inherit certain properties from that application object. This relationship is similar to object oriented programming where the service principal is like an instantiated object while the Application is the class for that object.
 
 ```Powershell
-$appid = "<App Id foun in portal"
+$appid = "<App Id found in portal"
 $appkey = "App key found in portal"
 az login --service-principal -u $appid -p $appkey --tenant "<Tenent ID found on the Azure Active Directory Homepage>"
 ```
