@@ -38,7 +38,7 @@ Remove-AzResourceGroup -Name $RG2.ResourceGroupName -Force
 
 # Remove created directory and files
 $dir = Get-ChildItem . -Directory
-if ($dir) {Remove-Item .\$dir -Recurse}
+if ($dir) {Remove-Item $dir -Recurse}
 Remove-Item "host.json"
 Remove-Item "local.settings.json"
     
