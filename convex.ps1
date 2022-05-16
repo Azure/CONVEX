@@ -107,7 +107,7 @@ foreach ($mod in $dirs.Name) {
     if ($decision -eq "create") {
         .\create.ps1 $SubOne $SubTwo $users $domainname
     } else {
-        .\teardown $SubOne $SubTwo
+        .\teardown.ps1 $SubOne $SubTwo
     }
     Set-Location ..
 }

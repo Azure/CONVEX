@@ -70,6 +70,9 @@ $sp1 = New-AzADServicePrincipal -DisplayName $sp1Name -Role Reader -Scope $sp1Sc
 $sp2Name = "m2webapp-admin"
 $sp2Scope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name
 $sp2 = New-AzADServicePrincipal -DisplayName $sp2Name -Scope $sp2Scope
+New-AzRoleAssignment -ObjectId $sp2.Id -RoleDefinitionName "Reader" -Scope $sp2Scope
+$sa2Scope = $sp2Scope + '/providers/Microsoft.Storage/storageAccounts/' + $SA2Name
+New-AzRoleAssignment -ObjectId $sp2.Id -RoleDefinitionName "Classic Storage Account Key Operator Service Role" -Scope $sa2Scope
 Write-Host "Service Principals created"
 
 # Add the flag to the SA
@@ -78,10 +81,17 @@ New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
 Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob flag.txt -Context $ctx
 
 # Add in the appKey to the prived app
-Set-AzKeyVaultSecret -VaultName $theVault.VaultName -Name "appKey" -SecretValue $sp2.Secret
+$currentUser = az ad signed-in-user show --query objectId -o tsv
+Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $currentUser -PermissionsToKeys all -PermissionsToSecrets all
+$sp2AppId = $sp2.AppId.ToString()
+$ssid = ConvertTo-SecureString -String $sp2AppId -AsPlainText -Force
+Set-AzKeyVaultSecret -VaultName $theVault.VaultName -Name "appId" -SecretValue $ssid
+$sspw = ConvertTo-SecureString -String $sp2.PasswordCredentials.SecretText -AsPlainText -Force
+Set-AzKeyVaultSecret -VaultName $theVault.VaultName -Name "appKey" -SecretValue $sspw
 
 # Set Key Vault permissions
 Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $sp1.Id -PermissionsToKeys get,list -PermissionsToSecrets get,list
+Remove-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $currentUser
 
 # ------In Sub One------ #
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
@@ -94,11 +104,9 @@ $settings = @{}
 foreach ($kvp in $appSettings) {
     $settings[$kvp.Name] = $kvp.Value
 }
-$spAppId = $sp1.ApplicationId.ToString()
+$spAppId = $sp1.AppId.ToString()
 $settings['application_id'] = $spAppId
-$secret = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sp1.Secret)
-$secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($secret)
-$settings['application_key'] = $secret.ToString()
+$settings['application_key'] = $sp1.PasswordCredentials.SecretText
 Set-AzWebApp -ResourceGroupName $RG1Name -Name $webServiceName -AppSettings $settings
 Write-Host "Web App Application settings updated"
 

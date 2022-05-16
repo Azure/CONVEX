@@ -19,7 +19,7 @@ Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-A
 ..\Utils\delete_users.ps1 "m3"
 
 # Delete dummy value 
-Remove-AzADUser -DisplayName "JohnDoe" -Force
+Remove-AzADUser -DisplayName "JohnDoe"
 
 # ------Sub One------ #
 
@@ -38,7 +38,7 @@ Remove-AzResourceGroup -Name $RG2.ResourceGroupName -Force
 
 # Remove created directory and files
 $dir = Get-ChildItem . -Directory
-if ($dir) {Remove-Item .\$dir -Recurse}
+if ($dir) {Remove-Item $dir -Recurse}
 Remove-Item "host.json"
 Remove-Item "local.settings.json"
     

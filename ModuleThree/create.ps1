@@ -60,7 +60,8 @@ Update-AzFunctionApp -Name $functionApp -ResourceGroupName $RG1Name -Application
 New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $appInsightsName -ResourceType Microsoft.Insights/components -ResourceGroupName $RG1Name
 
 # Create function
-func new -n $function -t "Timer trigger" -l PowerShell
+func init --worker-runtime powershell
+func new -n $function -t "Timer trigger"
 
 # Switch Subscriptions
 Get-AzSubscription -SubscriptionId $SubTwo.Id -TenantId $SubTwo.TenantId | Set-AzContext
@@ -91,6 +92,7 @@ Write-Host "Key Vault created"
 Write-Host "Creating Service Principal"
 $appScope = '/subscriptions/' + $SubTwo.Id + '/resourceGroups/' + $RG2Name + '/providers/Microsoft.KeyVault/vaults/' + $VaultName
 $app = New-AzADServicePrincipal -DisplayName $appName -Scope $appScope
+New-AzRoleAssignment -ObjectId $app.Id -RoleDefinitionName Reader -Scope $appScope
 Write-Host "Service Principal created"
 
 # Set KV policy
@@ -111,7 +113,10 @@ New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -Scope $dsco
 Write-Host "John Doe created"
 
 # Add user info to KV
+$currentUser = az ad signed-in-user show --query objectId -o tsv
+Set-AzKeyVaultAccessPolicy -VaultName $VaultName -ObjectId $currentUser -PermissionsToKeys all -PermissionsToSecrets all
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $displayname -SecretValue $sspw
+Remove-AzKeyVaultAccessPolicy -VaultName $VaultName -ObjectId $currentUser
 
 # Switch Subscription
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 
@@ -122,11 +127,10 @@ Copy-Item .\run.ps1 .\$function\
 Set-Location .\$function\
 $str = '$TenantId = "' + $SubTwo.TenantId + '"'
 (Get-Content .\run.ps1).replace('$TenantId = ', $str) | Set-Content .\run.ps1
-$str = '$AppObjectId = "' + $app.ApplicationId + '"'
-(Get-Content .\run.ps1).replace('$AppObjectId = ', $str) | Set-Content .\run.ps1
-$secret = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($app.Secret)
-$secret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($secret)
-$str = '$Password = "' + $secret.ToString() + '"'
+$spAppId = $app.AppId.ToString()
+$str = '$AppId = "' + $spAppId + '"'
+(Get-Content .\run.ps1).replace('$AppId = ', $str) | Set-Content .\run.ps1
+$str = '$Password = "' + $app.PasswordCredentials.SecretText + '"'
 (Get-Content .\run.ps1).replace('$Password = ', $str) | Set-Content .\run.ps1
 Set-Location ..
 Write-Host "Function code modified"
