@@ -10,7 +10,7 @@ $toDel = $groups | Where-Object DisplayName -Clike $groupname
 
 # Remove all the users
 $usrList = Get-AzADGroupMember -GroupObjectId $toDel.Id
-foreach ($usr in $usrList) {Remove-AzADUser -DisplayName $usr.DisplayName -Force}
+foreach ($usr in $usrList) {Remove-AzADUser -DisplayName $usr.DisplayName}
 
 # Remove the group from AAD
-Remove-AzADGroup -ObjectId $toDel.id -Force
+Remove-AzADGroup -ObjectId $toDel.id

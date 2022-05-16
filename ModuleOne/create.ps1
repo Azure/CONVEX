@@ -1,4 +1,4 @@
-﻿# This PowerShell Script will create Module 1
+# This PowerShell Script will create Module 1
 
 param($SubTwo, $SubOne, $userNum, $domainname)
 
@@ -66,12 +66,16 @@ Write-Host "Starting Key Vault created"
 Write-Host "Creating User Key Vault"
 New-AzKeyVault -Name $UserVaultName -ResourceGroupName $RG1Name -Location $Location
 Write-Host "User Key Vault created"
+
+$currentUser = az ad signed-in-user show --query objectId -o tsv
+Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $currentUser -PermissionsToKeys all -PermissionsToSecrets all
 Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $group.Id -PermissionsToKeys get,list -PermissionsToSecrets get,list
 New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -ResourceName $theVault.VaultName -ResourceType Microsoft.KeyVault/vaults -ResourceGroupName $RG1Name
 
 # Fill the Vaults with secrets
 Write-Host "Adding secrets to starting Key Vault"
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $KeyName -SecretValue $SecretKey1
+Remove-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $currentUser
 
 # Create the Users
 ..\Utils\create_users.ps1 $guid1 $domainname "m1" $userNum

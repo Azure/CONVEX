@@ -78,10 +78,13 @@ New-AzStorageContainer -Name $BlobName -Context $ctx -Permission Blob
 Set-AzStorageBlobContent -File "..\Utils\flag.txt" -Container $BlobName -Blob flag.txt -Context $ctx
 
 # Add in the appKey to the prived app
+$currentUser = az ad signed-in-user show --query objectId -o tsv
+Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $currentUser -PermissionsToKeys all -PermissionsToSecrets all
 Set-AzKeyVaultSecret -VaultName $theVault.VaultName -Name "appKey" -SecretValue $sp2.Secret
 
 # Set Key Vault permissions
 Set-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $sp1.Id -PermissionsToKeys get,list -PermissionsToSecrets get,list
+Remove-AzKeyVaultAccessPolicy -VaultName $theVault.VaultName -ObjectId $currentUser
 
 # ------In Sub One------ #
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 

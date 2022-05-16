@@ -111,7 +111,10 @@ New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName Reader -Scope $dsco
 Write-Host "John Doe created"
 
 # Add user info to KV
+$currentUser = az ad signed-in-user show --query objectId -o tsv
+Set-AzKeyVaultAccessPolicy -VaultName $VaultName -ObjectId $currentUser -PermissionsToKeys all -PermissionsToSecrets all
 Set-AzKeyVaultSecret -VaultName $VaultName -Name $displayname -SecretValue $sspw
+Remove-AzKeyVaultAccessPolicy -VaultName $VaultName -ObjectId $currentUser
 
 # Switch Subscription
 Get-AzSubscription -SubscriptionId $SubOne.Id -TenantId $SubOne.TenantId | Set-AzContext 

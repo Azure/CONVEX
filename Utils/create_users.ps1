@@ -26,8 +26,11 @@ for ($cur = 1; $cur -le $n; $cur++) {
     $thisuser = New-AzADUser -DisplayName $displayname -UserPrincipalName $upn -Password $sspw -MailNickname $displayname
     Add-AzADGroupMember -MemberObjectId $thisuser.Id -TargetGroupObjectId $toAdd.Id
 
-    # Store username and password in keyvault 
+    # Store username and password in keyvault
+    $currentUser = az ad signed-in-user show --query objectId -o tsv
+    Set-AzKeyVaultAccessPolicy -VaultName $UserKV.Name -ObjectId $currentUser -PermissionsToKeys all -PermissionsToSecrets all
     Set-AzKeyVaultSecret -VaultName $UserKV.Name -Name $displayname -SecretValue $sspw
+    Remove-AzKeyVaultAccessPolicy -VaultName $UserKV.Name -ObjectId $currentUser
 }
 
 Write-Host "Finished creating $module users"
